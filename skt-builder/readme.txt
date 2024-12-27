@@ -2,11 +2,11 @@
 Contributors: sonalsinha21
 Tags: page builder, builder, drag-and-drop, editor, landing page
 Requires at least: 5.0
-Tested up to: 6.5
+Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.6
+Stable tag: 4.7
 License: GPLv3
-License URI: https://www.gnu.org/licenses/gpl.html
+License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 
 SKT Page Builder has been designed and developed to assist anyone in creating pages using a drag and drop page builder interface. Hence it will help in creating exciting websites easily for FREE without knowing any coding and managing your content easily.
 
@@ -173,6 +173,10 @@ You can edit the content of each block. To do it click on the necessary block on
 
 
 == Changelog ==
+= 4.7 =
+* Compatibility with WordPress 6.7
+* Resolved Vulnerability's issue provided by Wordfence Vulnerability Researcher(s).
+
 = 4.6 =
 * Compatibility with WordPress 6.5
 

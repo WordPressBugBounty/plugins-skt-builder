@@ -2,10 +2,12 @@
 /*
 Plugin Name: SKT Builder
 Plugin URI: https://www.sktthemes.org/shop/skt-page-builder/
-Text Domain: sktbuilder
+Text Domain: skt-builder
 Domain Path: /languages
 Description: SKT Page Builder is an intuitive page builder created in order to save time and efforts of creating landing pages and for adding your content the way you like it or love it.
-Version: 4.6
+Version: 4.7
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 Author: SKT Themes
 Author URI: https://www.sktthemes.org/
 */
@@ -20,7 +22,7 @@ class Sktbuilder {
 	 *
 	 * @var string
 	 */
-	private $version = '4.6';
+	private $version = '4.7';
 	/**
 	 * Register actions for plugin
 	 */
@@ -155,7 +157,7 @@ class Sktbuilder {
 
 		// Localize the script with new data
 		$translation_array = array(
-			'button_text' => esc_html__( 'Edit with SKT Builder', 'sktbuilder' ),
+			'button_text' => esc_html__( 'Edit with SKT Builder', 'skt-builder' ),
 			'theme_url' => get_template_directory_uri(),
 		);
 		wp_localize_script( 'sktbuilder-backend-custom', 'sktbuilder_backend_custom', $translation_array );
@@ -178,7 +180,7 @@ class Sktbuilder {
 		if ( empty( $post ) ) {
 			wp_die( 'Post not found' );
 		}
-		return '<script type="text/javascript" src="' . plugins_url( 'sktbuilder-wordpress-driver.js', __FILE__ ) . '"></script><script type="text/javascript"> var starter = new SktbuilderStarter({"mode": "' . $this->mode . '", "skip":["jquery","underscore","backbone"],"sktbuilderUrl": "' . plugins_url( 'sktbuilder/', __FILE__ ) . '", "driver": new SktbuilderWordpressDriver({"ajaxUrl": "' . admin_url( 'admin-ajax.php' ) . '", "iframeUrl": "' . add_query_arg( 'sktbuilder', 'true', get_permalink( $post->ID ) ) . '", "pageId": ' . $post->ID . ', "pages": ' . $this->getSktbuilderPages() . ', "page": "' . ( $post->post_title != '' ? wp_slash( $post->post_title ) : esc_html__( "No title", 'sktbuilder' ) ) . '" }) });</script>';
+		return '<script type="text/javascript" src="' . plugins_url( 'sktbuilder-wordpress-driver.js', __FILE__ ) . '"></script><script type="text/javascript"> var starter = new SktbuilderStarter({"mode": "' . $this->mode . '", "skip":["jquery","underscore","backbone"],"sktbuilderUrl": "' . plugins_url( 'sktbuilder/', __FILE__ ) . '", "driver": new SktbuilderWordpressDriver({"ajaxUrl": "' . admin_url( 'admin-ajax.php' ) . '", "iframeUrl": "' . add_query_arg( 'sktbuilder', 'true', get_permalink( $post->ID ) ) . '", "pageId": ' . $post->ID . ', "pages": ' . $this->getSktbuilderPages() . ', "page": "' . ( $post->post_title != '' ? wp_slash( $post->post_title ) : esc_html__( "No title", 'skt-builder' ) ) . '" }) });</script>';
 	}
 
 	/**
@@ -208,7 +210,7 @@ class Sktbuilder {
 		global $hook_suffix;
 		echo '<!DOCTYPE html><html><head>';
 		echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
-		echo '<title>' . esc_html__( 'Edit Page with sktbuilder', 'sktbuilder' ) . '</title>';
+		echo '<title>' . esc_html__( 'Edit Page with sktbuilder', 'skt-builder' ) . '</title>';
 		do_action( 'admin_enqueue_scripts', $hook_suffix );
 		do_action( 'admin_print_styles' );
 		do_action( 'admin_print_scripts' );
@@ -530,7 +532,7 @@ class Sktbuilder {
 			if ( is_singular() && ( !is_null( $post_meta ) && count( $post_meta ) ) ) {
 					$wp_admin_bar->add_menu(array(
 						'id' => 'sktbuilder-admin-bar-link',
-						'title' => esc_html__( 'Edit with SKT Builder', 'sktbuilder' ),
+						'title' => esc_html__( 'Edit with SKT Builder', 'skt-builder' ),
 						'href' => $this->getEditWithSktbuilderUrl( $id ),
 						'meta' => array( 'class' => 'sktbuilder-inline-link' ),
 					));
@@ -599,7 +601,7 @@ class Sktbuilder {
 		if($post_meta){
 			// If have blocks - remove tinymce editor
 			if ( !is_null($post_meta['blocks']) && count( $post_meta['blocks'] ) ) {
-				add_meta_box( 'sktbuilder-page-info', esc_html__( 'Attention!', 'sktbuilder' ), array( $this, 'infoMetaboxDisplay' ), 'page' );
+				add_meta_box( 'sktbuilder-page-info', esc_html__( 'Attention!', 'skt-builder' ), array( $this, 'infoMetaboxDisplay' ), 'page' );
 			}
 		}
 	}
@@ -611,7 +613,7 @@ class Sktbuilder {
 		$allowed_html = array(
 			'p' => array(),
 		);
-		echo wp_kses( __( '<p>Current page has been edited with SKT Builder. To edit this page as regular one - go to SKT Builder editor by pressing "Edit with SKT Builder" button and remove all blocks.</p>', 'sktbuilder' ), $allowed_html );
+		echo wp_kses( __( '<p>Current page has been edited with SKT Builder. To edit this page as regular one - go to SKT Builder editor by pressing "Edit with SKT Builder" button and remove all blocks.</p>', 'skt-builder' ), $allowed_html );
 	}
 
 	/**
@@ -644,7 +646,7 @@ class Sktbuilder {
 		$post_meta = json_decode( get_post_meta( $id, 'sktbuilder_data', true ), true );
 
 		if ( ! is_null($post_meta) && count( $post_meta ) ) {
-			$actions['edit_sktbuilder'] = '<a href="' . $url . '">' . esc_html__( 'Edit with SKT Builder', 'sktbuilder' ) . '</a>';
+			$actions['edit_sktbuilder'] = '<a href="' . $url . '">' . esc_html__( 'Edit with SKT Builder', 'skt-builder' ) . '</a>';
 		}
 		return $actions;
 	}
@@ -707,11 +709,11 @@ class Sktbuilder {
 
 		if ( empty( $_FILES ) ) {
 			$data['error'] = false;
-			$data['message'] = __( 'Please select an image to upload!','sktbuilder' );
+			$data['message'] = __( 'Please select an image to upload!','skt-builder' );
 		} elseif ( $file['size'] > 5242880 ) { // Maximum image size is 5M
 			$data['size'] = $files[0]['size'];
 			$data['error'] = false;
-			$data['message'] = __( 'Image is too large. It must be less than 5M!','sktbuilder' );
+			$data['message'] = __( 'Image is too large. It must be less than 5M!','skt-builder' );
 		} else {
 			$data['message'] = '';
 
@@ -728,7 +730,7 @@ class Sktbuilder {
 
 			if ( ! $attachment_id ) {
 				$data['error'] = false;
-				$data['message'] = __( 'An error has occured. Your image was not added.','sktbuilder' );
+				$data['message'] = __( 'An error has occured. Your image was not added.','skt-builder' );
 			}
 		}
 
@@ -742,13 +744,14 @@ class Sktbuilder {
 	public function addNewVideo() {
 		$data = array();
 
+
 		if ( empty( $_FILES ) ) {
 			$data['error'] = false;
-			$data['message'] = __( 'Please select an image to upload!','sktbuilder' );
+			$data['message'] = __( 'Please select an image to upload!','skt-builder' );
 		} elseif ( $file['size'] > 8388608 ) { // Maximum image size is 8M
 			$data['size'] = $files[0]['size'];
 			$data['error'] = false;
-			$data['message'] = __( 'Video is too large. It must be less than 8M!','sktbuilder' );
+			$data['message'] = __( 'Video is too large. It must be less than 8M!','skt-builder' );
 		} else {
 			$data['message'] = '';
 			if ( isset( $_FILES['video'] ) ) {
@@ -764,7 +767,7 @@ class Sktbuilder {
 
 			if ( ! $attachment_id ) {
 				$data['error'] = false;
-				$data['message'] = __( 'An error has occured. Your image was not added.','sktbuilder' );
+				$data['message'] = __( 'An error has occured. Your image was not added.','skt-builder' );
 			}
 		}
 
@@ -777,8 +780,8 @@ class Sktbuilder {
  	 */
 	public function registerSktbuilderAdminMenu() {
 		add_menu_page(
-			__('SKT Builder Manager', 'sktbuilder'),
-			__( 'SKT Builder', 'sktbuilder' ),
+			__('SKT Builder Manager', 'skt-builder'),
+			__( 'SKT Builder', 'skt-builder' ),
 			'manage_options',
 			'sktbuilder',
 			array( $this, 'adminPage' ),
@@ -788,8 +791,8 @@ class Sktbuilder {
 
 		add_submenu_page(
 			'sktbuilder',
-			__('Manage Libraries','menu-test'),
-			__('Manage Libraries','menu-test'),
+			__('Manage Libraries','skt-builder'),
+			__('Manage Libraries','skt-builder'),
 			'manage_options',
 			'sktbuilder-manage-libs',
 			array( $this, 'manageLibs' )
@@ -825,11 +828,11 @@ class Sktbuilder {
 			unset( $list_libs[array_search( urldecode_deep( $_GET['lib_url'] ), $list_libs )] );
 
 			if ( update_option( 'sktbuilder_libraries', $list_libs ) ) {
-				add_settings_error('sktbuilder_action', esc_attr( 'updated' ), __( 'Library has been deleted', 'sktbuilder' ), 'updated' );
+				add_settings_error('sktbuilder_action', esc_attr( 'updated' ), __( 'Library has been deleted', 'skt-builder' ), 'updated' );
 				set_transient('sktbuilder_action', get_settings_errors(), 30);
 				wp_safe_redirect('admin.php?page=sktbuilder-manage-libs');
 			} else {
-				add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( "Library can't been deleted", 'sktbuilder' ), 'error');
+				add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( "Library can't been deleted", 'skt-builder' ), 'error');
 				set_transient('sktbuilder_action', get_settings_errors(), 30);
 			}
 		}
@@ -889,7 +892,7 @@ class Sktbuilder {
 		} else if ( isset( $_FILES['lib_file'] ) && '' !== $_FILES['lib_file']['name'] ) {
 			$this->addLibraryByArchive( $_FILES['lib_file'] );
 		} else {
-			add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( "You need to fill in one of the fields", 'sktbuilder' ), 'error');
+			add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( "You need to fill in one of the fields", 'skt-builder' ), 'error');
 			set_transient( 'sktbuilder_action', get_settings_errors(), 30 );
 			$this->redirect();
 		}
@@ -906,7 +909,7 @@ class Sktbuilder {
 		}
 
 		if ( ! $data = @file_get_contents( $lib_url ) ) {
-			add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( "The field isn't set or the value is invalid", 'sktbuilder' ), 'error');
+			add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( "The field isn't set or the value is invalid", 'skt-builder' ), 'error');
 			set_transient( 'sktbuilder_action', get_settings_errors(), 30 );
 			$this->redirect();
 		}
@@ -924,10 +927,10 @@ class Sktbuilder {
 			array_push( $list_libs, $lib_url );
 
 			if ( update_option( 'sktbuilder_libraries', $list_libs ) ) {
-				add_settings_error('sktbuilder_action', esc_attr( 'updated' ), __( 'The library has been successfully added', 'sktbuilder' ), 'updated');
+				add_settings_error('sktbuilder_action', esc_attr( 'updated' ), __( 'The library has been successfully added', 'skt-builder' ), 'updated');
 				set_transient( 'sktbuilder_action', get_settings_errors(), 30 );
 			} else {
-				add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( 'The library has not been added', 'sktbuilder' ), 'error');
+				add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( 'The library has not been added', 'skt-builder' ), 'error');
 				set_transient( 'sktbuilder_action', get_settings_errors(), 30 );
 			}
 		}
@@ -939,65 +942,102 @@ class Sktbuilder {
 	 * Addd library by url
 	 * @param (Array) $file
 	 */
-	public function addLibraryByArchive( $file = array() ) {
-		WP_Filesystem();
+	protected function addLibraryByArchive($file = array()) {
+		
+    if (!current_user_can('upload_files')) {
+        wp_die(esc_html__('You do not have permission to upload files.', 'skt-builder'));
+    }
 
-		$upload = wp_upload_dir();
-		$upload_dir = $upload['basedir'];
-		$upload_dir = $upload_dir . '/sktbuilder';
+    if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'add_library_nonce')) {
+        wp_die(esc_html__('Invalid request.', 'skt-builder'));
+    }
 
-		if ( wp_mkdir_p( $upload_dir ) ) {
-			// Set default folder "sktbuilder"
-			add_filter( 'upload_dir', array($this, 'UploadDir') );
+    WP_Filesystem();
+    $upload = wp_upload_dir();
+    $upload_dir = trailingslashit($upload['basedir']) . 'skt-builder';
 
-			$uploadedfile = $_FILES['lib_file'];
+    if (!wp_mkdir_p($upload_dir)) {
+        $this->addError(__('Unable to create the directory for uploads.', 'skt-builder'));
+        return;
+    }
 
-			$allowed_file_types = array( 'zip' =>'application/zip' );
-	    	$overrides = array('test_form' => false, 'mimes' => $allowed_file_types);
-			$movefile = wp_handle_upload( $uploadedfile, $overrides );
+    // Block PHP execution in the upload directory
+    file_put_contents($upload_dir . '/.htaccess', "<Files *.php>\n    deny from all\n</Files>");
 
-			if ( $movefile && ! isset( $movefile['error'] ) ) {
-				$unzipfile = unzip_file( $movefile['file'], $upload_dir );
+    $uploadedfile = isset($_FILES['lib_file']) ? $_FILES['lib_file'] : null;
+    if (!$uploadedfile) {
+        $this->addError(__('No file uploaded.', 'skt-builder'));
+        return;
+    }
 
-				if ( $unzipfile ) {
-					$json_url = str_replace( ".zip", "/lib.json", $movefile['url'] );
+    $allowed_file_types = array('zip' => 'application/zip');
+    $overrides = array('test_form' => false, 'mimes' => $allowed_file_types);
 
-					if ( @file_get_contents( $json_url ) ) {
-						$list_libs = get_option( 'sktbuilder_libraries' );
+    $movefile = wp_handle_upload($uploadedfile, $overrides);
+    if (!$movefile || isset($movefile['error'])) {
+        $this->addError(__('Error unzipping the file. Please ensure it is a valid ZIP file.', 'skt-builder'));
+        return;
+    }
 
-						if ( $list_libs === '' )
-							$list_libs = array();
+    // Unzip the uploaded file
+    $unzipfile = unzip_file($movefile['file'], $upload_dir);
+    if (!$unzipfile) {
+        $this->addError(__('Error unzipping the file. Ensure it is a valid ZIP file.', 'skt-builder'));
+        unlink($movefile['file']); // Clean up uploaded ZIP file
+        return;
+    }
 
-						array_push( $list_libs, $json_url );
-		    			update_option( 'sktbuilder_libraries', $list_libs );
-					} else {
-						add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( 'File "lib.json" was not found', 'sktbuilder' ), 'error');
-						set_transient( 'sktbuilder_action', get_settings_errors(), 30 );
-					}
-					add_settings_error('sktbuilder_action', esc_attr( 'notice' ), __( "The library's URL has been added", 'sktbuilder' ), 'notice');
-					set_transient( 'sktbuilder_action', get_settings_errors(), 30 );
-				} else {
-					add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( "There was an error unzipping the file", 'sktbuilder' ), 'error');
-					set_transient( 'sktbuilder_action', get_settings_errors(), 30 );
-				}
-			} else {
-			    /**
-			     * Error generated by _wp_handle_upload()
-			     * @see _wp_handle_upload() in wp-admin/includes/file.php
-			     */
-				add_settings_error('sktbuilder_action', esc_attr( 'error' ), $movefile['error'], 'error');
-				set_transient( 'sktbuilder_action', get_settings_errors(), 30 );
-			}
+    // Validate the extracted files
+    $extracted_files = scandir($upload_dir);
+    foreach ($extracted_files as $file) {
+        $file_path = $upload_dir . '/' . $file;
+        if (is_file($file_path)) {
+            $file_ext = pathinfo($file, PATHINFO_EXTENSION);
 
-			// Remove default folder "sktbuilder"
-			remove_filter( 'upload_dir', array( $this, 'UploadDir') );
+            // Allow only specific file types (e.g., JSON files)
+            if (!in_array($file_ext, array('json'), true)) {
+                $this->addError(__('The uploaded ZIP contains forbidden files.', 'skt-builder'));
+                array_map('unlink', glob("$upload_dir/*")); // Delete all extracted files
+                unlink($movefile['file']); // Clean up uploaded ZIP file
+                return;
+            }
+        }
+    }
 
-			$this->redirect();
-		} else {
-			add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( "You don’t have a permission to upload or create files", 'sktbuilder' ), 'error');
-			set_transient( 'sktbuilder_action', get_settings_errors(), 30 );
-		}
+    // Check for required `lib.json`
+    if (!file_exists($upload_dir . '/lib.json')) {
+        $this->addError(__('The file "lib.json" was not found in the archive.', 'skt-builder'));
+        array_map('unlink', glob("$upload_dir/*")); // Clean up extracted files
+        unlink($movefile['file']); // Clean up uploaded ZIP file
+        return;
+    }
+
+    $list_libs = get_option('sktbuilder_libraries', array());
+    if (!is_array($list_libs)) {
+        $list_libs = array();
+    }
+
+    $json_url = str_replace('.zip', '/lib.json', $movefile['url']);
+    if (!in_array($json_url, $list_libs, true)) {
+        $list_libs[] = $json_url;
+        update_option('sktbuilder_libraries', $list_libs);
+        $this->addNotice(__('The library URL has been added successfully.', 'skt-builder'));
+    } else {
+        $this->addError(__('The library URL already exists.', 'skt-builder'));
+    }
+
+    // Clean up temporary files
+    unlink($movefile['file']);
+    array_map('unlink', glob("$upload_dir/*")); // Delete extracted files
+
+    $this->safeRedirect(); // Use the renamed method
+}
+
+	protected function safeRedirect() {
+		wp_safe_redirect(admin_url('admin.php?page=sktbuilder_settings'));
+		exit;
 	}
+
 
 	/**
 	 * Change default upload folder
@@ -1009,6 +1049,7 @@ class Sktbuilder {
 	    $dirs['url'] = $dirs['baseurl'] . '/sktbuilder';
 	    return $dirs;
 	}
+ 
 
 	/**
 	 * Get sktbuilder pages
@@ -1032,7 +1073,7 @@ class Sktbuilder {
 		$pages = array();
 		foreach ($sktbuilder_pages as $value) {
 			if ($post->ID !== $value->ID) {
-				$pages[] = array('title' => ( $value->post_title != '' ? $value->post_title : esc_html__( "No title", 'sktbuilder' ) ), 'url' => $this->getEditWithSktbuilderUrl( $value->ID ));
+				$pages[] = array('title' => ( $value->post_title != '' ? $value->post_title : esc_html__( "No title", 'skt-builder' ) ), 'url' => $this->getEditWithSktbuilderUrl( $value->ID ));
 			}
 		}
 
@@ -1040,4 +1081,3 @@ class Sktbuilder {
 	}
 }
 $sktbuilder = new Sktbuilder( );
-
