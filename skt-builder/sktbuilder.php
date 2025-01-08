@@ -5,7 +5,7 @@ Plugin URI: https://www.sktthemes.org/shop/skt-page-builder/
 Text Domain: skt-builder
 Domain Path: /languages
 Description: SKT Page Builder is an intuitive page builder created in order to save time and efforts of creating landing pages and for adding your content the way you like it or love it.
-Version: 4.7
+Version: 4.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 Author: SKT Themes
@@ -22,7 +22,7 @@ class Sktbuilder {
 	 *
 	 * @var string
 	 */
-	private $version = '4.7';
+	private $version = '4.8';
 	/**
 	 * Register actions for plugin
 	 */
@@ -944,7 +944,7 @@ class Sktbuilder {
 	 */
 	protected function addLibraryByArchive($file = array()) {
 		
-    if (!current_user_can('upload_files')) {
+    if (!current_user_can('administrator')) {
         wp_die(esc_html__('You do not have permission to upload files.', 'skt-builder'));
     }
 

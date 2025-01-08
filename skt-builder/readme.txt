@@ -4,7 +4,7 @@ Tags: page builder, builder, drag-and-drop, editor, landing page
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.7
+Stable tag: 4.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 
@@ -173,6 +173,9 @@ You can edit the content of each block. To do it click on the necessary block on
 
 
 == Changelog ==
+= 4.8 =
+* Changed the capability check and accessible to administrators.
+
 = 4.7 =
 * Compatibility with WordPress 6.7
 * Resolved Vulnerability's issue provided by Wordfence Vulnerability Researcher(s).
