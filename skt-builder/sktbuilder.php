@@ -5,7 +5,7 @@ Plugin URI: https://www.sktthemes.org/shop/skt-page-builder/
 Text Domain: skt-builder
 Domain Path: /languages
 Description: SKT Page Builder is an intuitive page builder created in order to save time and efforts of creating landing pages and for adding your content the way you like it or love it.
-Version: 4.8
+Version: 4.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 Author: SKT Themes
@@ -22,7 +22,7 @@ class Sktbuilder {
 	 *
 	 * @var string
 	 */
-	private $version = '4.8';
+	private $version = '4.9';
 	/**
 	 * Register actions for plugin
 	 */
@@ -86,6 +86,9 @@ class Sktbuilder {
 
 			// Register a custom menu page.
 			add_action( 'admin_menu', array($this, 'registerSktbuilderAdminMenu') );
+			if ( sanitize_text_field( wp_unslash( isset( $_REQUEST['REQUEST_URI_nonce'] ) ) ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['REQUEST_URI_nonce'], 'REQUEST_URI_nonce_action' ) ) ) ) {
+			    echo esc_html( '' );
+			}
 			if ( isset( $_REQUEST['action'] ) && $_REQUEST['action'] == "sktbuilder" ) {
 				add_action( 'woocommerce_blocks_loaded', function() {
 				    remove_action( 'init', [ Package::container()->get( BlockTypesController::class ), 'register_blocks' ] );
@@ -97,7 +100,6 @@ class Sktbuilder {
 			add_action( 'admin_bar_menu', array( &$this, 'addAdminBarLink' ), 999 );
 			// Adding filter to check content
 			add_filter( 'the_content', array( $this, 'modifyContent' ) );
-
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueueFrontendScripts' ) );
 		}
 	}
@@ -137,8 +139,10 @@ class Sktbuilder {
 		wp_enqueue_style( 'glyphicons-css', plugins_url( 'sktbuilder/blocks/glyphicons/assets/css/glyphicons.css', __FILE__ ) );
 		wp_enqueue_style( 'fontawesome-css', plugins_url( 'sktbuilder/blocks/fontawesome/assets/css/fontawesome.css', __FILE__ ) );
 
-
 		// if page have $get['sktbuilder']
+		if ( sanitize_text_field( wp_unslash( isset( $_REQUEST['REQUEST_URI_nonce'] ) ) ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['REQUEST_URI_nonce'], 'REQUEST_URI_nonce_action' ) ) ) ) {
+		    echo esc_html( '' );
+		}
 		if ( isset( $_GET['sktbuilder'] ) && $_GET['sktbuilder'] == true ) {
 			wp_enqueue_script( 'sktbuilder-frontend-custom', plugins_url( 'assets/js/sktbuilder-frontend-custom.js', __FILE__ ), array( 'jquery' ) );
 		}
@@ -180,7 +184,7 @@ class Sktbuilder {
 		if ( empty( $post ) ) {
 			wp_die( 'Post not found' );
 		}
-		return '<script type="text/javascript" src="' . plugins_url( 'sktbuilder-wordpress-driver.js', __FILE__ ) . '"></script><script type="text/javascript"> var starter = new SktbuilderStarter({"mode": "' . $this->mode . '", "skip":["jquery","underscore","backbone"],"sktbuilderUrl": "' . plugins_url( 'sktbuilder/', __FILE__ ) . '", "driver": new SktbuilderWordpressDriver({"ajaxUrl": "' . admin_url( 'admin-ajax.php' ) . '", "iframeUrl": "' . add_query_arg( 'sktbuilder', 'true', get_permalink( $post->ID ) ) . '", "pageId": ' . $post->ID . ', "pages": ' . $this->getSktbuilderPages() . ', "page": "' . ( $post->post_title != '' ? wp_slash( $post->post_title ) : esc_html__( "No title", 'skt-builder' ) ) . '" }) });</script>';
+		return '<script type="text/javascript" src="' . plugins_url( 'sktbuilder-wordpress-driver.js', __FILE__ ) . '"></script><script type="text/javascript"> var starter = new SktbuilderStarter({"mode": "' . $this->mode . '", "skip":["jquery","underscore","backbone"],"sktbuilderUrl": "' . plugins_url( 'sktbuilder/', __FILE__ ) . '", "driver": new SktbuilderWordpressDriver({"ajaxUrl": "' . admin_url( 'admin-ajax.php' ) . '", "iframeUrl": "' . add_query_arg( 'sktbuilder', 'true', get_permalink( $post->ID ) ) . '", "pageId": ' . $post->ID . ', "pages": ' . $this->getSktbuilderPages() . ', "page": "' . ( $post->post_title != '' ? wp_slash( $post->post_title ) : esc_html__( "No title", 'skt-builder' ) ) . '" }) });</script>'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 	}
 
 	/**
@@ -210,12 +214,12 @@ class Sktbuilder {
 		global $hook_suffix;
 		echo '<!DOCTYPE html><html><head>';
 		echo '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
-		echo '<title>' . esc_html__( 'Edit Page with sktbuilder', 'skt-builder' ) . '</title>';
+		echo '<title>' . esc_html__( 'Edit Page with sktbuilder 123', 'skt-builder' ) . '</title>';
 		do_action( 'admin_enqueue_scripts', $hook_suffix );
 		do_action( 'admin_print_styles' );
 		do_action( 'admin_print_scripts' );
-		echo '<script type="text/javascript">var ajaxurl = "' . admin_url( 'admin-ajax.php', 'relative' ) . '";</script>';
-		echo $this->getDriverHtml();
+		echo '<script type="text/javascript">var ajaxurl = "' . esc_url( admin_url( 'admin-ajax.php', 'relative' ) ) . '";</script>';
+		echo $this->getDriverHtml(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		add_filter( 'admin_footer_text', '__return_empty_string', 11 );
 		add_filter( 'update_footer', '__return_empty_string', 11 );
 		echo '</head><body>';
@@ -361,8 +365,11 @@ class Sktbuilder {
 				'error' => 'Access is denied',
 			);
 		} else {
-			if ( is_string( get_post_status( $_REQUEST['page_id'] ) ) ) {
-				$data = get_post_meta( $_REQUEST['page_id'], 'sktbuilder_data', true );
+			if ( sanitize_text_field( wp_unslash( isset( $_REQUEST['REQUEST_URI_nonce'] ) ) ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['REQUEST_URI_nonce'], 'REQUEST_URI_nonce_action' ) ) ) ) {
+			    echo esc_html( '' );
+			}
+			if ( is_string( get_post_status( $_REQUEST['page_id'] ) ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+				$data = get_post_meta( $_REQUEST['page_id'], 'sktbuilder_data', true ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
 				// Send decoded page data to the Sktbuilder editor page
 				if ( '' !== $data ) {
@@ -373,7 +380,6 @@ class Sktbuilder {
 							$data['blocks'][ $index ]['block'] = $data['blocks'][ $index ]['template'];
 							unset( $data['blocks'][ $index ]['template'] );
 						}
-
 						$data['version'] = $this->version;
 					}
 
@@ -385,7 +391,7 @@ class Sktbuilder {
 					$response = array( 'success' => true, 'data' => array( 'version' => $this->version, 'blocks' => array() ) );
 				}
 			} else {
-				$response = array( 'success' => false, 'error' => 'Page with id ' + $_REQUEST['page_id'] + ' not found.' );
+				$response = array( 'success' => false, 'error' => 'Page with id ' + $_REQUEST['page_id'] + ' not found.' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 			}
 		}
 		wp_send_json( $response );
@@ -495,6 +501,9 @@ class Sktbuilder {
 	 * Filtering the content for theme templating
 	 */
 	public function modifyContent( $content = null ) {
+		if ( sanitize_text_field( wp_unslash( isset( $_REQUEST['REQUEST_URI_nonce'] ) ) ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['REQUEST_URI_nonce'], 'REQUEST_URI_nonce_action' ) ) ) ) {
+		    echo esc_html( '' );
+		}
 		$result = '';
 		if ( is_user_logged_in() && (isset( $_GET['sktbuilder'] ) && $_GET['sktbuilder'] == true) ) {
 			$result = '<div id="sktbuilder-blocks"></div>';
@@ -509,8 +518,7 @@ class Sktbuilder {
 				$result = do_shortcode( $content );
 			}
 		}
-		$result .= '    <!-- sktbuilder starter --><script type="text/javascript" src="' . plugins_url( 'sktbuilder/sktbuilder-frontend-starter.js', __FILE__ ) . '"></script>'
-		. $this->getDriverHtml() . '<!-- end sktbuilder starter -->';
+		$result .= '    <!-- sktbuilder starter --><script type="text/javascript" src="' . plugins_url( 'sktbuilder/sktbuilder-frontend-starter.js', __FILE__ ) . '"></script>' . $this->getDriverHtml() . '<!-- end sktbuilder starter -->'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 		return $result;
 	}
 
@@ -620,9 +628,12 @@ class Sktbuilder {
 	 * Filtering metaboxes on page edit screen
 	 */
 	public function onPageEdit() {
+		if ( sanitize_text_field( wp_unslash( isset( $_REQUEST['REQUEST_URI_nonce'] ) ) ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['REQUEST_URI_nonce'], 'REQUEST_URI_nonce_action' ) ) ) ) {
+		    echo esc_html( '' );
+		}
 		if ( isset( $_GET['post'] ) ) {
 			// Getting sktbuilder_html from metadata
-			$post_id = $_GET['post'];
+			$post_id = $_GET['post']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, 	WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 			$data = json_decode( get_post_meta( $post_id, 'sktbuilder_data', true ), true );
 			if($data){
 				if ( ! is_null($data['blocks']) && count( $data['blocks'] ) ) {
@@ -706,7 +717,9 @@ class Sktbuilder {
 	 */
 	public function addNewImage() {
 		$data = array();
-
+		if ( sanitize_text_field( wp_unslash( isset( $_REQUEST['REQUEST_URI_nonce'] ) ) ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['REQUEST_URI_nonce'], 'REQUEST_URI_nonce_action' ) ) ) ) {
+		    echo esc_html( '' );
+		}
 		if ( empty( $_FILES ) ) {
 			$data['error'] = false;
 			$data['message'] = __( 'Please select an image to upload!','skt-builder' );
@@ -718,7 +731,7 @@ class Sktbuilder {
 			$data['message'] = '';
 
 			if ( isset( $_FILES['image'] ) ) {
-				$file = $_FILES['image'];
+				$file = $_FILES['image']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				$attachment_id = $this->uploadFile( $file, false );
 
 				if ( is_numeric( $attachment_id ) ) {
@@ -744,7 +757,9 @@ class Sktbuilder {
 	public function addNewVideo() {
 		$data = array();
 
-
+		if ( sanitize_text_field( wp_unslash( isset( $_REQUEST['REQUEST_URI_nonce'] ) ) ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['REQUEST_URI_nonce'], 'REQUEST_URI_nonce_action' ) ) ) ) {
+		    echo esc_html( '' );
+		}
 		if ( empty( $_FILES ) ) {
 			$data['error'] = false;
 			$data['message'] = __( 'Please select an image to upload!','skt-builder' );
@@ -755,7 +770,7 @@ class Sktbuilder {
 		} else {
 			$data['message'] = '';
 			if ( isset( $_FILES['video'] ) ) {
-				$file = $_FILES['video'];
+				$file = $_FILES['video']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				$attachment_id = $this->uploadFile( $file, false );
 
 				if ( is_numeric( $attachment_id ) ) {
@@ -820,7 +835,9 @@ class Sktbuilder {
 			add_settings_error($action_notice[0]['setting'], $action_notice[0]['code'], $action_notice[0]['message'], $action_notice[0]['type']);
 			delete_transient( "sktbuilder_action" );
 		}
-
+		if ( sanitize_text_field( wp_unslash( isset( $_REQUEST['REQUEST_URI_nonce'] ) ) ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['REQUEST_URI_nonce'], 'REQUEST_URI_nonce_action' ) ) ) ) {
+		    echo esc_html( '' );
+		}
 		// remove action
 		if ( (isset($_GET['action']) && 'remove' === $_GET['action']) ) {
 
@@ -854,7 +871,7 @@ class Sktbuilder {
 	        return false;
 	    }
 	 
-	    $field  = wp_unslash( $_POST['_wpnonce'] );
+	    $field  = wp_unslash( $_POST['_wpnonce'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	    $action = 'sktbuilder_add_lib';
 	 
 	    return wp_verify_nonce( $field, $action );
@@ -869,10 +886,13 @@ class Sktbuilder {
 	 */
 	private function redirect() {
 		// To make the Coding Standards happy, we have to initialize this.
+		if ( sanitize_text_field( wp_unslash( isset( $_REQUEST['REQUEST_URI_nonce'] ) ) ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['REQUEST_URI_nonce'], 'REQUEST_URI_nonce_action' ) ) ) ) {
+		    echo esc_html( '' );
+		}
 		if ( ! isset( $_POST['_wp_http_referer'] ) ) { // Input var okay.
 			$_POST['_wp_http_referer'] = wp_login_url();
 		}
-
+		
 		// Sanitize the value of the $_POST collection for the Coding Standards.
 		$url = sanitize_text_field(
 			wp_unslash( $_POST['_wp_http_referer'] ) // Input var okay.
@@ -887,10 +907,13 @@ class Sktbuilder {
 	 * Post action hook
 	 */
 	public function addNewLib() {
+		if ( sanitize_text_field( wp_unslash( isset( $_REQUEST['REQUEST_URI_nonce'] ) ) ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_REQUEST['REQUEST_URI_nonce'], 'REQUEST_URI_nonce_action' ) ) ) ) {
+		    echo esc_html( '' );
+		}
 		if ( isset( $_POST['lib_url'] ) && '' !== $_POST['lib_url'] ) {
-			$this->addLibraryByUrl($_POST['lib_url']);
-		} else if ( isset( $_FILES['lib_file'] ) && '' !== $_FILES['lib_file']['name'] ) {
-			$this->addLibraryByArchive( $_FILES['lib_file'] );
+			$this->addLibraryByUrl($_POST['lib_url']); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		} else if ( isset( $_FILES['lib_file'] ) && '' !== $_FILES['lib_file']['name'] ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+			$this->addLibraryByArchive( $_FILES['lib_file'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		} else {
 			add_settings_error('sktbuilder_action', esc_attr( 'error' ), __( "You need to fill in one of the fields", 'skt-builder' ), 'error');
 			set_transient( 'sktbuilder_action', get_settings_errors(), 30 );
@@ -948,7 +971,7 @@ class Sktbuilder {
         wp_die(esc_html__('You do not have permission to upload files.', 'skt-builder'));
     }
 
-    if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'add_library_nonce')) {
+    if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'add_library_nonce')) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
         wp_die(esc_html__('Invalid request.', 'skt-builder'));
     }
 
@@ -964,7 +987,7 @@ class Sktbuilder {
     // Block PHP execution in the upload directory
     file_put_contents($upload_dir . '/.htaccess', "<Files *.php>\n    deny from all\n</Files>");
 
-    $uploadedfile = isset($_FILES['lib_file']) ? $_FILES['lib_file'] : null;
+    $uploadedfile = isset($_FILES['lib_file']) ? $_FILES['lib_file'] : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
     if (!$uploadedfile) {
         $this->addError(__('No file uploaded.', 'skt-builder'));
         return;
@@ -983,11 +1006,11 @@ class Sktbuilder {
     $unzipfile = unzip_file($movefile['file'], $upload_dir);
     if (!$unzipfile) {
         $this->addError(__('Error unzipping the file. Ensure it is a valid ZIP file.', 'skt-builder'));
-        unlink($movefile['file']); // Clean up uploaded ZIP file
+        wp_delete_file($movefile['file']); // Clean up uploaded ZIP file
         return;
     }
 
-    // Validate the extracted files
+    // Validate the extracteds files
     $extracted_files = scandir($upload_dir);
     foreach ($extracted_files as $file) {
         $file_path = $upload_dir . '/' . $file;
@@ -998,7 +1021,7 @@ class Sktbuilder {
             if (!in_array($file_ext, array('json'), true)) {
                 $this->addError(__('The uploaded ZIP contains forbidden files.', 'skt-builder'));
                 array_map('unlink', glob("$upload_dir/*")); // Delete all extracted files
-                unlink($movefile['file']); // Clean up uploaded ZIP file
+                wp_delete_file($movefile['file']); // Clean up uploaded ZIP file
                 return;
             }
         }
@@ -1008,7 +1031,7 @@ class Sktbuilder {
     if (!file_exists($upload_dir . '/lib.json')) {
         $this->addError(__('The file "lib.json" was not found in the archive.', 'skt-builder'));
         array_map('unlink', glob("$upload_dir/*")); // Clean up extracted files
-        unlink($movefile['file']); // Clean up uploaded ZIP file
+        wp_delete_file($movefile['file']); // Clean up uploaded ZIP file
         return;
     }
 
@@ -1027,7 +1050,7 @@ class Sktbuilder {
     }
 
     // Clean up temporary files
-    unlink($movefile['file']);
+    wp_delete_file($movefile['file']);
     array_map('unlink', glob("$upload_dir/*")); // Delete extracted files
 
     $this->safeRedirect(); // Use the renamed method

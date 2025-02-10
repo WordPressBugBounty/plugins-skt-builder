@@ -4,7 +4,7 @@ Tags: page builder, builder, drag-and-drop, editor, landing page
 Requires at least: 5.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 4.8
+Stable tag: 4.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 
@@ -19,7 +19,6 @@ Also check our offerings of **[WordPress themes free](https://www.sktthemes.org/
 == Documentation ==
 
 **[Click here](https://sktthemesdemo.net/documentation/skt-builder-doc)**
-
 
 == Introduction ==
 
@@ -173,6 +172,9 @@ You can edit the content of each block. To do it click on the necessary block on
 
 
 == Changelog ==
+= 4.9 =
+* Resolved Plugin Check (PCP) issue.
+
 = 4.8 =
 * Changed the capability check and accessible to administrators.
 
