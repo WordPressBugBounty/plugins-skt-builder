@@ -42,10 +42,16 @@ SktbuilderWordpressDriver.prototype.exit = function() {
  * @param {savePageDataCallback} cb - A callback to run.
  */
 SktbuilderWordpressDriver.prototype.savePageData = function(data, cb) {
+
+    //console.log('Nonce value:', this.options.nonce);
+
     var dataToSend = JSON.stringify({
         pageId: this.options.pageId,
-        data: data
+        data: data,
+        nonce: this.options.nonce
     });
+
+
     jQuery.ajax({
         url: this.options.ajaxUrl + '?action=sktbuilder_save_page_data',
         type: 'POST',
@@ -84,13 +90,16 @@ SktbuilderWordpressDriver.prototype.savePageData = function(data, cb) {
  * @param {loadPageDataCallback} cb - A callback to run.
  */
 SktbuilderWordpressDriver.prototype.loadPageData = function(cb) {
+
     jQuery.ajax({
         url: this.options.ajaxUrl,
         type: 'POST',
         data: {
             action: 'sktbuilder_load_page_data',
             page_id: this.options.pageId,
-            lang: 'en'
+            lang: 'en',
+            nonce: this.options.nonce,
+            
         },
         dataType: 'json',
         success: function(response) {
@@ -149,10 +158,21 @@ SktbuilderWordpressDriver.prototype.loadLibrariesData = function(cb) {
  * @param {savePageTemplateCallback} cb - A callback to run.
  */
 SktbuilderWordpressDriver.prototype.savePageTemplate = function(data, cb) {
+    var dataToSend = JSON.stringify({
+        pageId: this.options.pageId,
+        data: data,
+        nonce: this.options.nonce
+    });
+
+
+
     jQuery.ajax({
         url: this.options.ajaxUrl + '?action=sktbuilder_save_page_template',
         type: 'POST',
-        data: JSON.stringify(data),
+        data: dataToSend,
+
+
+
         processData: false,
         contentType: "application/json; charset=utf-8",
         dataType: 'json',

@@ -2,9 +2,9 @@
 Contributors: sonalsinha21
 Tags: page builder, builder, drag-and-drop, editor, landing page
 Requires at least: 5.0
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 4.9
+Stable tag: 5.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 
@@ -172,6 +172,9 @@ You can edit the content of each block. To do it click on the necessary block on
 
 
 == Changelog ==
+= 5.0 =
+* Resolved Broken Access Control issue.
+
 = 4.9 =
 * Resolved Plugin Check (PCP) issue.
 
